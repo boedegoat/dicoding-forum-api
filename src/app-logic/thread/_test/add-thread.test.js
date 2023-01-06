@@ -50,9 +50,13 @@ describe("addThread", () => {
         };
 
         const mockThreadDB = {};
-        mockThreadDB.addThread = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve(expectedAddedThread));
+        mockThreadDB.addThread = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                id: "thread-123",
+                title: payload.title,
+                owner: payload.userId,
+            })
+        );
 
         const addThread = buildAddThread({
             validatePayload,

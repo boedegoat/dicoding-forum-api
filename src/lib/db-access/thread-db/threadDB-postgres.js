@@ -27,7 +27,7 @@ const buildThreadDBPostgres = ({ generateId }) => ({
         return thread.id;
     },
 
-    getThreadDetailsById: async (threadId) => {
+    getThreadById: async (threadId) => {
         const query = {
             text: `
                 SELECT 

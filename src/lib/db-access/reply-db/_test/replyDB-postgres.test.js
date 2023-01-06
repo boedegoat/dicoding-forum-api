@@ -188,8 +188,65 @@ describe("replyDB-postgres", () => {
             // soft delete reply so its not deleted from database
             const replies = await replyDBTest.findRepliesById(replyId);
             expect(replies.length).toEqual(1);
-            expect(replies[0].content).toEqual("**balasan telah dihapus**");
             expect(replies[0].is_deleted).toEqual(true);
+        });
+    });
+
+    describe("getRepliesByCommentId", () => {
+        it("returns comment replies correctly", async () => {
+            await userDBTest.addUser({ id: "user-1", username: "ucup" });
+
+            await threadDBTest.addThread({
+                id: "thread-1",
+                userId: "user-1",
+            });
+
+            await commentDBTest.addComment({
+                id: "comment-1",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
+
+            await replyDBTest.addReply({
+                id: "reply-1",
+                commentId: "comment-1",
+                userId: "user-1",
+                content: "reply",
+            });
+            await replyDBTest.addReply({
+                id: "reply-2",
+                commentId: "comment-1",
+                userId: "user-1",
+                content: "reply",
+                isDeleted: true,
+            });
+
+            const expectedReturnedReplies = [
+                {
+                    id: "reply-1",
+                    username: "ucup",
+                    date: expect.any(Date),
+                    content: "reply",
+                    is_deleted: false,
+                },
+                {
+                    id: "reply-2",
+                    username: "ucup",
+                    date: expect.any(Date),
+                    content: "reply",
+                    is_deleted: true,
+                },
+            ];
+
+            const replyDB = buildReplyDBPostgres({
+                generateId: {},
+            });
+
+            const actualReturnedReplies = await replyDB.getRepliesByCommentId(
+                "comment-1"
+            );
+
+            expect(actualReturnedReplies).toEqual(expectedReturnedReplies);
         });
     });
 });

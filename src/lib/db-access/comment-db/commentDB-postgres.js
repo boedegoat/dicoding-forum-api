@@ -22,8 +22,6 @@ const buildCommentDBPostgres = ({ generateId }) => ({
         if (!comment) {
             throw new NotFoundError("comment tidak ditemukan");
         }
-
-        return comment.id;
     },
 
     verifyCommentAuthorization: async ({ commentId, userId }) => {
@@ -44,9 +42,7 @@ const buildCommentDBPostgres = ({ generateId }) => ({
         const softDeleteCommentQuery = {
             text: `
                 UPDATE comments 
-                SET 
-                    is_deleted = true,
-                    content = '**komentar telah dihapus**' 
+                SET is_deleted = true
                 WHERE id = $1
             `,
             values: [commentId],
@@ -61,6 +57,7 @@ const buildCommentDBPostgres = ({ generateId }) => ({
                     comments.id,
                     comments.content,
                     comments.date,
+                    comments.is_deleted,
                     users.username
                 FROM comments
                 JOIN users
@@ -71,34 +68,7 @@ const buildCommentDBPostgres = ({ generateId }) => ({
             values: [threadId],
         };
 
-        const comments = (await pool.query(getCommentsQuery)).rows;
-
-        const commentsWithReplies = await Promise.all(
-            comments.map(async (comment) => {
-                const getRepliesQuery = {
-                    text: `
-                    SELECT 
-                        replies.id,
-                        replies.content,
-                        replies.date,
-                        users.username
-                    FROM replies
-                    JOIN users
-                    ON replies.owner = users.id
-                    WHERE replies.comment_id = $1
-                    ORDER BY replies.date
-                `,
-                    values: [comment.id],
-                };
-                const replies = (await pool.query(getRepliesQuery)).rows;
-                if (replies.length > 0) {
-                    return { ...comment, replies };
-                }
-                return comment;
-            })
-        );
-
-        return commentsWithReplies;
+        return (await pool.query(getCommentsQuery)).rows;
     },
 });
 

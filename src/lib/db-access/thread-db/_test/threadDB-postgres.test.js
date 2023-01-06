@@ -73,7 +73,7 @@ describe("threadDB-postgres", () => {
         });
     });
 
-    describe("getThreadDetailsById", () => {
+    describe("getThreadById", () => {
         it("returns thread details correctly", async () => {
             const threadId = "thread-1";
 
@@ -96,7 +96,7 @@ describe("threadDB-postgres", () => {
                 generateId: {},
             });
 
-            const actualThread = await threadDB.getThreadDetailsById(threadId);
+            const actualThread = await threadDB.getThreadById(threadId);
 
             expect(actualThread).toEqual(expectedThread);
         });

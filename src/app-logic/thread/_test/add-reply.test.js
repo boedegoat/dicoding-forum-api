@@ -66,9 +66,13 @@ describe("addReply", () => {
         mockCommentDB.checkIsCommentExistById = jest
             .fn()
             .mockImplementation(() => Promise.resolve());
-        mockReplyDB.addReply = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve(expectedAddedReply));
+        mockReplyDB.addReply = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                id: "reply-1",
+                content: payload.content,
+                owner: payload.userId,
+            })
+        );
 
         const addReply = buildAddReply({
             validatePayload,

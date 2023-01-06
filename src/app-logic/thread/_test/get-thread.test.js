@@ -39,74 +39,97 @@ describe("getThread", () => {
             threadId: "thread-1",
         };
 
+        const mockThreadDB = {};
+        const mockCommentDB = {};
+        const mockReplyDB = {};
+
+        mockThreadDB.checkIsThreadExistById = jest
+            .fn()
+            .mockImplementation(() => Promise.resolve());
+
+        mockThreadDB.getThreadById = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                id: "thread-1",
+                title: "sebuah thread",
+                body: "sebuah body thread",
+                date: "2021-08-08T07:19:09.775Z",
+                username: "dicoding",
+            })
+        );
+
+        mockCommentDB.getCommentsByThreadId = jest.fn().mockImplementation(() =>
+            Promise.resolve([
+                {
+                    id: "comment-1",
+                    username: "johndoe",
+                    date: "2021-08-08T07:22:33.555Z",
+                    content: "sebuah comment",
+                },
+            ])
+        );
+
+        mockReplyDB.getRepliesByCommentId = jest.fn().mockImplementation(() => [
+            {
+                id: "reply-1",
+                content: "sebuah balasan",
+                date: "2021-08-08T07:59:48.766Z",
+                username: "johndoe",
+            },
+            {
+                id: "reply-2",
+                content: "sebuah balasan",
+                date: "2021-08-08T08:07:01.522Z",
+                username: "dicoding",
+            },
+        ]);
+
         const expectedReturnedThread = {
             id: "thread-1",
             title: "sebuah thread",
             body: "sebuah body thread",
             date: "2021-08-08T07:19:09.775Z",
             username: "dicoding",
+            comments: [
+                {
+                    id: "comment-1",
+                    username: "johndoe",
+                    date: "2021-08-08T07:22:33.555Z",
+                    content: "sebuah comment",
+                    replies: [
+                        {
+                            id: "reply-1",
+                            content: "sebuah balasan",
+                            date: "2021-08-08T07:59:48.766Z",
+                            username: "johndoe",
+                        },
+                        {
+                            id: "reply-2",
+                            content: "sebuah balasan",
+                            date: "2021-08-08T08:07:01.522Z",
+                            username: "dicoding",
+                        },
+                    ],
+                },
+            ],
         };
-
-        const expectedReturnedComments = [
-            {
-                id: "comment-1",
-                username: "johndoe",
-                date: "2021-08-08T07:22:33.555Z",
-                content: "sebuah comment",
-                replies: [
-                    {
-                        id: "reply-1",
-                        content: "**balasan telah dihapus**",
-                        date: "2021-08-08T07:59:48.766Z",
-                        username: "johndoe",
-                    },
-                    {
-                        id: "reply-2",
-                        content: "sebuah balasan",
-                        date: "2021-08-08T08:07:01.522Z",
-                        username: "dicoding",
-                    },
-                ],
-            },
-        ];
-
-        const expectedThread = {
-            ...expectedReturnedThread,
-            comments: expectedReturnedComments,
-        };
-
-        const mockThreadDB = {};
-        const mockCommentDB = {};
-
-        mockThreadDB.checkIsThreadExistById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
-        mockThreadDB.getThreadDetailsById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve(expectedReturnedThread));
-        mockCommentDB.getCommentsByThreadId = jest
-            .fn()
-            .mockImplementation(() =>
-                Promise.resolve(expectedReturnedComments)
-            );
 
         const getThread = buildGetThread({
             validatePayload,
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
+            replyDB: mockReplyDB,
         });
 
-        const actualThread = await getThread(payload);
+        const actualReturnedThread = await getThread(payload);
 
-        expect(actualThread).toEqual(expectedThread);
+        expect(actualReturnedThread).toEqual(expectedReturnedThread);
         expect(mockThreadDB.checkIsThreadExistById).toBeCalledWith(
             payload.threadId
         );
-        expect(mockThreadDB.getThreadDetailsById).toBeCalledWith(
-            payload.threadId
-        );
+        expect(mockThreadDB.getThreadById).toBeCalledWith(payload.threadId);
         expect(mockCommentDB.getCommentsByThreadId).toBeCalledWith(
             payload.threadId
         );
+        expect(mockReplyDB.getRepliesByCommentId).toBeCalledWith("comment-1");
     });
 });

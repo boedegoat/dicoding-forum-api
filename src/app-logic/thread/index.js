@@ -27,6 +27,7 @@ module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
         validatePayload: buildValidator(getThreadSchema),
         threadDB,
         commentDB,
+        replyDB,
     }),
 
     addReply: buildAddReply({

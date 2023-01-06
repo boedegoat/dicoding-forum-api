@@ -25,26 +25,26 @@ describe("commentDB-postgres", () => {
 
     describe("addComment", () => {
         it("adds and returns comment correctly", async () => {
-            await userDBTest.addUser({ id: "user-123" });
+            await userDBTest.addUser({ id: "user-1" });
             await threadDBTest.addThread({
-                id: "thread-123",
-                userId: "user-123",
+                id: "thread-1",
+                userId: "user-1",
             });
 
             const payload = {
                 content: "a comment",
-                threadId: "thread-123",
-                userId: "user-123",
+                threadId: "thread-1",
+                userId: "user-1",
             };
 
             const expectedAddedComment = {
-                id: "comment-123",
+                id: "comment-1",
                 content: payload.content,
                 owner: payload.userId,
             };
 
             const commentDB = buildCommentDBPostgres({
-                generateId: () => "123",
+                generateId: () => "1",
             });
 
             const actualAddedComment = await commentDB.addComment(payload);
@@ -59,38 +59,34 @@ describe("commentDB-postgres", () => {
 
     describe("checkIsCommentExistById", () => {
         it("throws not found error if comment is not found", async () => {
-            const commentId = "comment-123";
+            const commentDB = buildCommentDBPostgres({
+                generateId: {},
+            });
+
+            await expect(
+                commentDB.checkIsCommentExistById("comment-1")
+            ).rejects.toThrowError(NotFoundError);
+        });
+
+        it("resolves if comment exist", async () => {
+            await userDBTest.addUser({ id: "user-1" });
+            await threadDBTest.addThread({
+                id: "thread-1",
+                userId: "user-1",
+            });
+            await commentDBTest.addComment({
+                id: "comment-1",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
 
             const commentDB = buildCommentDBPostgres({
                 generateId: {},
             });
 
             await expect(
-                commentDB.checkIsCommentExistById(commentId)
-            ).rejects.toThrowError(NotFoundError);
-        });
-
-        it("resolves and returns comment id if comment exist", async () => {
-            const commentId = "comment-123";
-            await userDBTest.addUser({ id: "user-123" });
-            await threadDBTest.addThread({
-                id: "thread-123",
-                userId: "user-123",
-            });
-            await commentDBTest.addComment({
-                id: commentId,
-                threadId: "thread-123",
-                userId: "user-123",
-            });
-
-            const commentDB = buildCommentDBPostgres({
-                generateId: {},
-            });
-
-            const actualCommentId = await commentDB.checkIsCommentExistById(
-                commentId
-            );
-            expect(actualCommentId).toEqual(commentId);
+                commentDB.checkIsCommentExistById("comment-1")
+            ).resolves.not.toThrowError(NotFoundError);
         });
     });
 
@@ -175,98 +171,62 @@ describe("commentDB-postgres", () => {
             // soft delete comment so its not deleted from database
             const comments = await commentDBTest.findCommentsById(commentId);
             expect(comments.length).toEqual(1);
-            expect(comments[0].content).toEqual("**komentar telah dihapus**");
             expect(comments[0].is_deleted).toEqual(true);
         });
     });
 
     describe("getCommentsByThreadId", () => {
         it("returns all comments and replies inside a thread correctly", async () => {
-            const userPayloads = [
-                { username: "udin", id: "user-1" },
-                { username: "umang", id: "user-2" },
-                { username: "samsul", id: "user-3" },
-            ];
-            await Promise.all(
-                userPayloads.map((payload) => userDBTest.addUser(payload))
-            );
+            await userDBTest.addUser({ username: "udin", id: "user-1" });
+            await userDBTest.addUser({ username: "umang", id: "user-2" });
+            await userDBTest.addUser({ username: "samsul", id: "user-3" });
 
             await threadDBTest.addThread({
                 id: "thread-1",
                 userId: "user-1",
             });
 
-            const commentPayloads = [
+            await commentDBTest.addComment({
+                id: "comment-1",
+                content: "comment",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
+            await commentDBTest.addComment({
+                id: "comment-2",
+                content: "comment",
+                threadId: "thread-1",
+                userId: "user-2",
+                isDeleted: true,
+            });
+
+            await replyDBTest.addReply({
+                id: "reply-1",
+                commentId: "comment-1",
+                userId: "user-2",
+            });
+            await replyDBTest.addReply({
+                id: "reply-2",
+                commentId: "comment-1",
+                userId: "user-3",
+            });
+
+            const expectedComments = [
                 {
                     id: "comment-1",
-                    threadId: "thread-1",
-                    userId: "user-1",
+                    date: expect.any(Date),
+                    username: "udin",
+                    content: "comment",
+                    is_deleted: false,
                 },
                 {
                     id: "comment-2",
-                    threadId: "thread-1",
-                    userId: "user-2",
+                    date: expect.any(Date),
+                    username: "umang",
+                    content: "comment",
                     is_deleted: true,
                 },
             ];
-
-            let expectedComments = await Promise.all(
-                commentPayloads.map((payload) =>
-                    commentDBTest.addComment(payload, {
-                        select: "id, date, content, owner",
-                    })
-                )
-            );
-
-            const replyPayloads = [
-                {
-                    id: "reply-1",
-                    commentId: "comment-1",
-                    userId: "user-2",
-                },
-                {
-                    id: "reply-2",
-                    commentId: "comment-1",
-                    userId: "user-3",
-                },
-            ];
-
-            const expectedReplies = await Promise.all(
-                replyPayloads.map((payload) =>
-                    replyDBTest.addReply(payload, {
-                        select: "id, date, content, owner, comment_id",
-                    })
-                )
-            );
-
-            expectedComments = expectedComments.map(
-                // change owner to username
-                ({ owner, ...comment }) => ({
-                    ...comment,
-                    username: userPayloads.find((user) => user.id === owner)
-                        .username,
-                })
-            );
-
-            expectedReplies
-                // change owner to username
-                .map(({ owner, ...reply }) => ({
-                    ...reply,
-                    username: userPayloads.find((user) => user.id === owner)
-                        .username,
-                }))
-                // put replies to expected comments
-                .map(({ comment_id: commentId, ...reply }) => {
-                    const commentIndex = expectedComments.findIndex(
-                        (c) => c.id === commentId
-                    );
-                    if (expectedComments[commentIndex].replies) {
-                        expectedComments[commentIndex].replies.push(reply);
-                    } else {
-                        expectedComments[commentIndex].replies = [reply];
-                    }
-                    return reply;
-                });
 
             const commentDB = buildCommentDBPostgres({
                 generateId: {},

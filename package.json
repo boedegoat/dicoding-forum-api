@@ -5,12 +5,11 @@
     "main": "index.js",
     "scripts": {
         "start": "node src/app.js",
-        "start:dev": "nodemon src/app.js",
+        "dev": "nodemon src/app.js",
         "test": "jest --setupFiles dotenv/config -i",
-        "test:watch:change": "jest --watch --setupFiles dotenv/config -i",
-        "test:watch": "jest --watchAll --coverage --setupFiles dotenv/config -i",
+        "test:dev": "jest --watchAll --coverage --setupFiles dotenv/config -i",
         "migrate": "node-pg-migrate",
-        "migrate:test": "node-pg-migrate -f config/database/test.json",
+        "migrate:dev": "node-pg-migrate -f config/database/test.json",
         "format": "prettier --write ."
     },
     "keywords": [],

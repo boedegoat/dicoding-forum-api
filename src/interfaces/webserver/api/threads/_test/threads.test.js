@@ -380,6 +380,16 @@ describe("/threads route", () => {
                 id: "thread-1",
                 userId: "user-1",
             });
+            await commentDBTest.addComment({
+                id: "comment-1",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
+            await replyDBTest.addReply({
+                id: "reply-id",
+                commentId: "comment-1",
+                userId: "user-1",
+            });
 
             const hapiServer = await buildHapiServer();
 

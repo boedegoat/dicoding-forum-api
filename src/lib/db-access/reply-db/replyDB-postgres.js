@@ -48,14 +48,33 @@ const buildReplyDBPostgres = ({ generateId }) => ({
         const softDeleteReplyQuery = {
             text: `
                 UPDATE replies 
-                SET 
-                    is_deleted = true,
-                    content = '**balasan telah dihapus**' 
+                SET is_deleted = true
                 WHERE id = $1
             `,
             values: [replyId],
         };
         await pool.query(softDeleteReplyQuery);
+    },
+
+    getRepliesByCommentId: async (commentId) => {
+        const getRepliesQuery = {
+            text: `
+                SELECT 
+                    replies.id,
+                    replies.content,
+                    replies.date,
+                    replies.is_deleted,
+                    users.username
+                FROM replies
+                JOIN users
+                ON replies.owner = users.id
+                WHERE replies.comment_id = $1
+                ORDER BY replies.date
+            `,
+            values: [commentId],
+        };
+
+        return (await pool.query(getRepliesQuery)).rows;
     },
 });
 

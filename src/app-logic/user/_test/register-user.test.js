@@ -92,9 +92,13 @@ describe("registerUser", () => {
         mockUserDB.verifyUsername = jest
             .fn()
             .mockImplementation(() => Promise.resolve());
-        mockUserDB.addUser = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve(expectedRegisteredUser));
+        mockUserDB.addUser = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                id: "user-123",
+                username: payload.username,
+                fullname: payload.fullname,
+            })
+        );
 
         const mockPasswordHash = {};
         mockPasswordHash.hash = jest

@@ -55,9 +55,13 @@ describe("addComment", () => {
         mockThreadDB.checkIsThreadExistById = jest
             .fn()
             .mockImplementation(() => Promise.resolve());
-        mockCommentDB.addComment = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve(expectedAddedComment));
+        mockCommentDB.addComment = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                id: "comment-123",
+                content: payload.content,
+                owner: payload.userId,
+            })
+        );
 
         const addComment = buildAddComment({
             validatePayload,

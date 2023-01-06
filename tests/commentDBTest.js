@@ -18,13 +18,7 @@ const commentDBTest = {
                 VALUES($1, $2, $3, $4, $5) 
                 RETURNING ${select}
             `,
-            values: [
-                id,
-                isDeleted ? "**komentar telah dihapus**" : content,
-                threadId,
-                userId,
-                isDeleted,
-            ],
+            values: [id, content, threadId, userId, isDeleted],
         };
 
         return (await pool.query(query)).rows[0];

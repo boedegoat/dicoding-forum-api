@@ -18,13 +18,7 @@ const replyDBTest = {
                 VALUES($1, $2, $3, $4, $5) 
                 RETURNING ${select}
             `,
-            values: [
-                id,
-                isDeleted ? "**balasan telah dihapus**" : content,
-                commentId,
-                userId,
-                isDeleted,
-            ],
+            values: [id, content, commentId, userId, isDeleted],
         };
 
         return (await pool.query(query)).rows[0];
