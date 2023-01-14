@@ -6,15 +6,15 @@
 
     ```env
     # HTTP SERVER
-    HOST=localhost
-    PORT=5000
+    HOST=
+    PORT=
 
-    # POSTGRES (used for automation testing in local and ci)
-    PGHOST=localhost
+    # POSTGRES
+    PGHOST=
     PGUSER=
-    PGDATABASE=forumapi_test
+    PGDATABASE=
     PGPASSWORD=
-    PGPORT=5432
+    PGPORT=
 
     # TOKENIZE
     ACCESS_TOKEN_KEY=
