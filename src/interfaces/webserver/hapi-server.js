@@ -47,14 +47,23 @@ const buildHapiServer = async ({
         }),
     });
 
-    server.route({
-        method: "GET",
-        path: "/500-test",
-        handler: () => {
-            // eslint-disable-next-line no-undef
-            console.log(apakek);
+    server.route([
+        {
+            method: "GET",
+            path: "/",
+            handler: () => ({
+                message: "samlekom",
+            }),
         },
-    });
+        {
+            method: "GET",
+            path: "/500-test",
+            handler: () => {
+                // eslint-disable-next-line no-undef
+                console.log(apakek);
+            },
+        },
+    ]);
 
     await server.register([
         {
