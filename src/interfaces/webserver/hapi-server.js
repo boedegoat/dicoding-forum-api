@@ -57,13 +57,6 @@ const buildHapiServer = async ({
         },
         {
             method: "GET",
-            path: "/user-agent",
-            handler: (request) => ({
-                value: request.headers["user-agent"],
-            }),
-        },
-        {
-            method: "GET",
             path: "/500-test",
             handler: () => {
                 // eslint-disable-next-line no-undef

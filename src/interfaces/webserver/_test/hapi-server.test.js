@@ -36,19 +36,6 @@ describe("HTTP Server", () => {
         expect(resJson.message).toEqual("samlekom");
     });
 
-    it("responses json with a value of request user agent on GET /user-agent", async () => {
-        const hapiServer = await buildHapiServer();
-        const res = await hapiServer.server.inject({
-            method: "GET",
-            url: "/user-agent",
-        });
-
-        const resJson = JSON.parse(res.payload);
-        expect(resJson.value).toBeDefined();
-        expect(typeof resJson.value).toEqual("string");
-        expect(resJson.value.length).not.toEqual(0);
-    });
-
     it("can start the server", async () => {
         const hapiServer = await buildHapiServer({ port: 5050 });
         await expect(hapiServer.start()).resolves.not.toThrowError();
