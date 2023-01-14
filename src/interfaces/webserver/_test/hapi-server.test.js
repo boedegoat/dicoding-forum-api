@@ -25,6 +25,17 @@ describe("HTTP Server", () => {
         expect(resJson.message).toEqual("terjadi kegagalan pada server kami");
     });
 
+    it("responses json with a message 'samlekom' on GET /", async () => {
+        const hapiServer = await buildHapiServer();
+        const res = await hapiServer.server.inject({
+            method: "GET",
+            url: "/",
+        });
+
+        const resJson = JSON.parse(res.payload);
+        expect(resJson.message).toEqual("samlekom");
+    });
+
     it("can start the server", async () => {
         const hapiServer = await buildHapiServer({ port: 5050 });
         await expect(hapiServer.start()).resolves.not.toThrowError();
