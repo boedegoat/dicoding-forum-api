@@ -9,10 +9,10 @@
     HOST=localhost
     PORT=5000
 
-    # POSTGRES
+    # POSTGRES (used for automation testing in local and ci)
     PGHOST=localhost
     PGUSER=
-    PGDATABASE=forumapi
+    PGDATABASE=forumapi_test
     PGPASSWORD=
     PGPORT=5432
 
@@ -20,17 +20,4 @@
     ACCESS_TOKEN_KEY=
     REFRESH_TOKEN_KEY=
     ACCCESS_TOKEN_AGE=
-    ```
-
-2. setup test database env
-
-    ```json
-    // config/database/test.json
-    {
-        "user": "",
-        "password": "",
-        "host": "localhost",
-        "port": 5432,
-        "database": "forumapi_test"
-    }
     ```
