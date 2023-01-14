@@ -57,19 +57,20 @@ describe("threadDB-postgres", () => {
             ).rejects.toThrowError(NotFoundError);
         });
 
-        it("resolves and returns thread id if thread exist", async () => {
-            const threadId = "thread-123";
+        it("resolves if thread exist", async () => {
             await userDBTest.addUser({ id: "user-123" });
-            await threadDBTest.addThread({ id: threadId, userId: "user-123" });
+            await threadDBTest.addThread({
+                id: "thread-123",
+                userId: "user-123",
+            });
 
             const threadDB = buildThreadDBPostgres({
                 generateId: {},
             });
 
-            const actualThreadId = await threadDB.checkIsThreadExistById(
-                threadId
-            );
-            expect(actualThreadId).toEqual(threadId);
+            await expect(
+                threadDB.checkIsThreadExistById("thread-123")
+            ).resolves.not.toThrowError(NotFoundError);
         });
     });
 

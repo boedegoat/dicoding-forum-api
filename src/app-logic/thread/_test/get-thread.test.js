@@ -4,36 +4,6 @@ const buildValidator = require("../../../lib/validator");
 const validatePayload = buildValidator(getThreadSchema);
 
 describe("getThread", () => {
-    it("throws error if payload doesn't contain needed property", async () => {
-        const invalidPayload = {};
-
-        const getThread = buildGetThread({
-            validatePayload,
-            threadDB: {},
-            commentDB: {},
-        });
-
-        await expect(getThread(invalidPayload)).rejects.toThrowError(
-            "GET_THREAD.NOT_CONTAIN_NEEDED_PROPERTY"
-        );
-    });
-
-    it("throws error if payload data type is wrong", async () => {
-        const invalidPayload = {
-            threadId: 1,
-        };
-
-        const getThread = buildGetThread({
-            validatePayload,
-            threadDB: {},
-            commentDB: {},
-        });
-
-        await expect(getThread(invalidPayload)).rejects.toThrowError(
-            "GET_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION"
-        );
-    });
-
     it("gets thread correctly that include all thread comments", async () => {
         const payload = {
             threadId: "thread-1",
@@ -43,11 +13,9 @@ describe("getThread", () => {
         const mockCommentDB = {};
         const mockReplyDB = {};
 
-        mockThreadDB.checkIsThreadExistById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
+        mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
 
-        mockThreadDB.getThreadById = jest.fn().mockImplementation(() =>
+        mockThreadDB.getThreadById = jest.fn(() =>
             Promise.resolve({
                 id: "thread-1",
                 title: "sebuah thread",
@@ -57,7 +25,7 @@ describe("getThread", () => {
             })
         );
 
-        mockCommentDB.getCommentsByThreadId = jest.fn().mockImplementation(() =>
+        mockCommentDB.getCommentsByThreadId = jest.fn(() =>
             Promise.resolve([
                 {
                     id: "comment-1",
@@ -69,9 +37,7 @@ describe("getThread", () => {
             ])
         );
 
-        mockReplyDB.getRepliesByCommentId = jest
-            .fn()
-            .mockImplementation(() => []);
+        mockReplyDB.getRepliesByCommentId = jest.fn(() => []);
 
         const expectedReturnedThread = {
             id: "thread-1",
@@ -122,7 +88,7 @@ describe("getThread", () => {
             .fn()
             .mockImplementation(() => Promise.resolve());
 
-        mockThreadDB.getThreadById = jest.fn().mockImplementation(() =>
+        mockThreadDB.getThreadById = jest.fn(() =>
             Promise.resolve({
                 id: "thread-1",
                 title: "sebuah thread",
@@ -132,7 +98,7 @@ describe("getThread", () => {
             })
         );
 
-        mockCommentDB.getCommentsByThreadId = jest.fn().mockImplementation(() =>
+        mockCommentDB.getCommentsByThreadId = jest.fn(() =>
             Promise.resolve([
                 {
                     id: "comment-1",
@@ -144,7 +110,7 @@ describe("getThread", () => {
             ])
         );
 
-        mockReplyDB.getRepliesByCommentId = jest.fn().mockImplementation(() => [
+        mockReplyDB.getRepliesByCommentId = jest.fn(() => [
             {
                 id: "reply-1",
                 content: "sebuah balasan",

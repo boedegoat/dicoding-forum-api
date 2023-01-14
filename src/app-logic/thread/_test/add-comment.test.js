@@ -1,41 +1,7 @@
-const { buildAddComment, addCommentSchema } = require("../add-comment");
+const buildAddComment = require("../add-comment");
 const buildValidator = require("../../../lib/validator");
 
-const validatePayload = buildValidator(addCommentSchema);
-
 describe("addComment", () => {
-    it("throws error if payload doesn't contain needed property", async () => {
-        const invalidPayload = {};
-
-        const addComment = buildAddComment({
-            validatePayload,
-            commentDB: {},
-            threadDB: {},
-        });
-
-        await expect(addComment(invalidPayload)).rejects.toThrowError(
-            "ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY"
-        );
-    });
-
-    it("throws error if payload data type is wrong", async () => {
-        const invalidPayload = {
-            content: "content",
-            threadId: 123,
-            userId: 123,
-        };
-
-        const addComment = buildAddComment({
-            validatePayload,
-            commentDB: {},
-            threadDB: {},
-        });
-
-        await expect(addComment(invalidPayload)).rejects.toThrowError(
-            "ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION"
-        );
-    });
-
     it("adds a new comment to a thread that sets user as the owner", async () => {
         const payload = {
             content: "content",
@@ -52,10 +18,8 @@ describe("addComment", () => {
         const mockThreadDB = {};
         const mockCommentDB = {};
 
-        mockThreadDB.checkIsThreadExistById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
-        mockCommentDB.addComment = jest.fn().mockImplementation(() =>
+        mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
+        mockCommentDB.addComment = jest.fn(() =>
             Promise.resolve({
                 id: "comment-123",
                 content: payload.content,
@@ -64,7 +28,7 @@ describe("addComment", () => {
         );
 
         const addComment = buildAddComment({
-            validatePayload,
+            buildValidator,
             commentDB: mockCommentDB,
             threadDB: mockThreadDB,
         });

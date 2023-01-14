@@ -23,8 +23,6 @@ const buildThreadDBPostgres = ({ generateId }) => ({
         if (!thread) {
             throw new NotFoundError("thread tidak ditemukan");
         }
-
-        return thread.id;
     },
 
     getThreadById: async (threadId) => {

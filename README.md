@@ -2,7 +2,7 @@
 
 ## Setup
 
-1. setup `.env`
+1. Setup `.env`
 
     ```env
     # HTTP SERVER
@@ -20,4 +20,31 @@
     ACCESS_TOKEN_KEY=
     REFRESH_TOKEN_KEY=
     ACCCESS_TOKEN_AGE=
+    ```
+
+    > **Catatan**
+    >
+    > Gunakan database testing di local dan CI environment, database asli di production environment (e.g EC2 Instance)
+
+2. Install dependencies and migrate database
+    ```
+    npm i
+    npm run migrate up
+    ```
+
+## Run
+
+-   Test
+    ```
+    npm run test
+    # or
+    npm run test:coverage
+    ```
+-   Dev server
+    ```
+    npm run dev
+    ```
+-   Production server
+    ```
+    npm start
     ```
