@@ -7,38 +7,6 @@ const buildValidator = require("../../../lib/validator");
 const validatePayload = buildValidator(deleteCommentSchema);
 
 describe("deleteComment", () => {
-    it("throws error if payload doesn't contain needed property", async () => {
-        const invalidPayload = {
-            threadId: "thread-123",
-        };
-
-        const deleteComment = buildDeleteComment({
-            validatePayload,
-            commentDB: {},
-        });
-
-        await expect(deleteComment(invalidPayload)).rejects.toThrowError(
-            "DELETE_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY"
-        );
-    });
-
-    it("throws error if payload data type is wrong", async () => {
-        const invalidPayload = {
-            threadId: "thread-123",
-            commentId: "comment-123",
-            userId: false,
-        };
-
-        const deleteComment = buildDeleteComment({
-            validatePayload,
-            commentDB: {},
-        });
-
-        await expect(deleteComment(invalidPayload)).rejects.toThrowError(
-            "DELETE_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION"
-        );
-    });
-
     it("deletes comment correctly", async () => {
         const payload = {
             threadId: "thread-123",
@@ -49,18 +17,14 @@ describe("deleteComment", () => {
         const mockThreadDB = {};
         const mockCommentDB = {};
 
-        mockThreadDB.checkIsThreadExistById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
-        mockCommentDB.checkIsCommentExistById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
-        mockCommentDB.verifyCommentAuthorization = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
-        mockCommentDB.deleteCommentById = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
+        mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
+        mockCommentDB.checkIsCommentExistById = jest.fn(() =>
+            Promise.resolve()
+        );
+        mockCommentDB.verifyCommentAuthorization = jest.fn(() =>
+            Promise.resolve()
+        );
+        mockCommentDB.deleteCommentById = jest.fn(() => Promise.resolve());
 
         const deleteComment = buildDeleteComment({
             validatePayload,

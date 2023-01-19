@@ -1,4 +1,4 @@
-module.exports.addCommentSchema = {
+const addCommentSchema = {
     name: "add_comment",
     schema: {
         content: {
@@ -16,10 +16,13 @@ module.exports.addCommentSchema = {
     },
 };
 
-module.exports.buildAddComment = ({ validatePayload, threadDB, commentDB }) => {
+const buildAddComment = ({ buildValidator, threadDB, commentDB }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(addCommentSchema);
         validatePayload(payload);
         await threadDB.checkIsThreadExistById(payload.threadId);
         return commentDB.addComment(payload);
     };
 };
+
+module.exports = buildAddComment;

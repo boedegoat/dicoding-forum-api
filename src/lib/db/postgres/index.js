@@ -2,9 +2,6 @@
 
 const { Pool } = require("pg");
 
-const testConfig = require("../../../../config/database/test.json");
-
-const pool =
-    process.env.NODE_ENV === "production" ? new Pool() : new Pool(testConfig);
+const pool = new Pool();
 
 module.exports = pool;

@@ -2,19 +2,19 @@
 
 ## Setup
 
-1. setup `.env`
+1. Setup `.env`
 
     ```env
     # HTTP SERVER
-    HOST=localhost
-    PORT=5000
+    HOST=
+    PORT=
 
     # POSTGRES
-    PGHOST=localhost
+    PGHOST=
     PGUSER=
-    PGDATABASE=forumapi
+    PGDATABASE=
     PGPASSWORD=
-    PGPORT=5432
+    PGPORT=
 
     # TOKENIZE
     ACCESS_TOKEN_KEY=
@@ -22,15 +22,29 @@
     ACCCESS_TOKEN_AGE=
     ```
 
-2. setup test database env
+    > **Catatan**
+    >
+    > Gunakan database testing di local dan CI environment, database asli di production environment (e.g EC2 Instance)
 
-    ```json
-    // config/database/test.json
-    {
-        "user": "",
-        "password": "",
-        "host": "localhost",
-        "port": 5432,
-        "database": "forumapi_test"
-    }
+2. Install dependencies and migrate database
+    ```
+    npm i
+    npm run migrate up
+    ```
+
+## Run
+
+-   Test
+    ```
+    npm run test
+    # or
+    npm run test:coverage
+    ```
+-   Dev server
+    ```
+    npm run dev
+    ```
+-   Production server
+    ```
+    npm start
     ```

@@ -1,5 +1,5 @@
 const { buildAddThread, addThreadSchema } = require("./add-thread");
-const { buildAddComment, addCommentSchema } = require("./add-comment");
+const buildAddComment = require("./add-comment");
 const { buildDeleteComment, deleteCommentSchema } = require("./delete-comment");
 const { buildGetThread, getThreadSchema } = require("./get-thread");
 const { buildAddReply, addReplySchema } = require("./add-reply");
@@ -12,7 +12,7 @@ module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
     }),
 
     addComment: buildAddComment({
-        validatePayload: buildValidator(addCommentSchema),
+        buildValidator,
         threadDB,
         commentDB,
     }),

@@ -1,3 +1,5 @@
+// TODO: refactor code like add-comment.js
+
 module.exports.addReplySchema = {
     name: "add_reply",
     schema: {
