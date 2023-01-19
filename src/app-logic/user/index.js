@@ -1,8 +1,8 @@
-const { buildRegisterUser, registerUserSchema } = require("./register-user");
+const buildRegisterUser = require("./register-user");
 
 module.exports = ({ userDB, passwordHash, buildValidator }) => ({
     registerUser: buildRegisterUser({
-        validatePayload: buildValidator(registerUserSchema),
+        buildValidator,
         userDB,
         passwordHash,
     }),

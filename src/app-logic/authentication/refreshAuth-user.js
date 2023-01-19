@@ -1,4 +1,4 @@
-module.exports.refreshAuthUserSchema = {
+const refreshAuthUserSchema = {
     name: "refresh_authentication",
     schema: {
         refreshToken: {
@@ -8,12 +8,9 @@ module.exports.refreshAuthUserSchema = {
     },
 };
 
-module.exports.buildRefreshAuthUser = ({
-    validatePayload,
-    authDB,
-    authTokenHandler,
-}) => {
+const buildRefreshAuthUser = ({ buildValidator, authDB, authTokenHandler }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(refreshAuthUserSchema);
         const { refreshToken } = validatePayload(payload);
 
         authTokenHandler.verifyRefreshToken(refreshToken);
@@ -24,3 +21,5 @@ module.exports.buildRefreshAuthUser = ({
         return newAccessToken;
     };
 };
+
+module.exports = buildRefreshAuthUser;

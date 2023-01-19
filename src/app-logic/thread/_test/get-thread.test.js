@@ -1,7 +1,5 @@
-const { buildGetThread, getThreadSchema } = require("../get-thread");
+const buildGetThread = require("../get-thread");
 const buildValidator = require("../../../lib/validator");
-
-const validatePayload = buildValidator(getThreadSchema);
 
 describe("getThread", () => {
     it("gets thread correctly that include all thread comments", async () => {
@@ -37,7 +35,7 @@ describe("getThread", () => {
             ])
         );
 
-        mockReplyDB.getRepliesByCommentId = jest.fn(() => []);
+        mockReplyDB.getRepliesByCommentIds = jest.fn(() => []);
 
         const expectedReturnedThread = {
             id: "thread-1",
@@ -56,7 +54,7 @@ describe("getThread", () => {
         };
 
         const getThread = buildGetThread({
-            validatePayload,
+            buildValidator,
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
             replyDB: mockReplyDB,
@@ -72,7 +70,9 @@ describe("getThread", () => {
         expect(mockCommentDB.getCommentsByThreadId).toBeCalledWith(
             payload.threadId
         );
-        expect(mockReplyDB.getRepliesByCommentId).toBeCalledWith("comment-1");
+        expect(mockReplyDB.getRepliesByCommentIds).toBeCalledWith([
+            "comment-1",
+        ]);
     });
 
     it("gets thread correctly that include all thread comments and replies", async () => {
@@ -110,13 +110,14 @@ describe("getThread", () => {
             ])
         );
 
-        mockReplyDB.getRepliesByCommentId = jest.fn(() => [
+        mockReplyDB.getRepliesByCommentIds = jest.fn(() => [
             {
                 id: "reply-1",
                 content: "sebuah balasan",
                 date: "2021-08-08T07:59:48.766Z",
                 username: "johndoe",
                 is_deleted: false,
+                comment_id: "comment-1",
             },
             {
                 id: "reply-2",
@@ -124,6 +125,7 @@ describe("getThread", () => {
                 date: "2021-08-08T08:07:01.522Z",
                 username: "dicoding",
                 is_deleted: true,
+                comment_id: "comment-1",
             },
         ]);
 
@@ -158,7 +160,7 @@ describe("getThread", () => {
         };
 
         const getThread = buildGetThread({
-            validatePayload,
+            buildValidator,
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
             replyDB: mockReplyDB,
@@ -174,6 +176,8 @@ describe("getThread", () => {
         expect(mockCommentDB.getCommentsByThreadId).toBeCalledWith(
             payload.threadId
         );
-        expect(mockReplyDB.getRepliesByCommentId).toBeCalledWith("comment-1");
+        expect(mockReplyDB.getRepliesByCommentIds).toBeCalledWith([
+            "comment-1",
+        ]);
     });
 });

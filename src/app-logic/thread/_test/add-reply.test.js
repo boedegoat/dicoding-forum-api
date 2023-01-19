@@ -1,7 +1,5 @@
-const { buildAddReply, addReplySchema } = require("../add-reply");
+const buildAddReply = require("../add-reply");
 const buildValidator = require("../../../lib/validator");
-
-const validatePayload = buildValidator(addReplySchema);
 
 describe("addReply", () => {
     it("adds reply correctly", async () => {
@@ -35,7 +33,7 @@ describe("addReply", () => {
         );
 
         const addReply = buildAddReply({
-            validatePayload,
+            buildValidator,
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
             replyDB: mockReplyDB,

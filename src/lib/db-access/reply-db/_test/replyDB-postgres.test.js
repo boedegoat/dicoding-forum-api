@@ -192,8 +192,8 @@ describe("replyDB-postgres", () => {
         });
     });
 
-    describe("getRepliesByCommentId", () => {
-        it("returns comment replies correctly", async () => {
+    describe("getRepliesByCommentIds", () => {
+        it("returns comments replies correctly", async () => {
             await userDBTest.addUser({ id: "user-1", username: "ucup" });
 
             await threadDBTest.addThread({
@@ -228,6 +228,7 @@ describe("replyDB-postgres", () => {
                     date: expect.any(Date),
                     content: "reply",
                     is_deleted: false,
+                    comment_id: "comment-1",
                 },
                 {
                     id: "reply-2",
@@ -235,6 +236,7 @@ describe("replyDB-postgres", () => {
                     date: expect.any(Date),
                     content: "reply",
                     is_deleted: true,
+                    comment_id: "comment-1",
                 },
             ];
 
@@ -242,9 +244,9 @@ describe("replyDB-postgres", () => {
                 generateId: {},
             });
 
-            const actualReturnedReplies = await replyDB.getRepliesByCommentId(
-                "comment-1"
-            );
+            const actualReturnedReplies = await replyDB.getRepliesByCommentIds([
+                "comment-1",
+            ]);
 
             expect(actualReturnedReplies).toEqual(expectedReturnedReplies);
         });

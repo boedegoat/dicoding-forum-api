@@ -1,9 +1,6 @@
-const { buildLoginUser, loginUserSchema } = require("./login-user");
-const {
-    buildRefreshAuthUser,
-    refreshAuthUserSchema,
-} = require("./refreshAuth-user");
-const { buildLogoutUser, logoutUserSchema } = require("./logout-user");
+const buildLoginUser = require("./login-user");
+const buildRefreshAuthUser = require("./refreshAuth-user");
+const buildLogoutUser = require("./logout-user");
 
 module.exports = ({
     userDB,
@@ -13,7 +10,7 @@ module.exports = ({
     buildValidator,
 }) => ({
     loginUser: buildLoginUser({
-        validatePayload: buildValidator(loginUserSchema),
+        buildValidator,
         userDB,
         authDB,
         authTokenHandler,
@@ -21,13 +18,13 @@ module.exports = ({
     }),
 
     refreshAuthUser: buildRefreshAuthUser({
-        validatePayload: buildValidator(refreshAuthUserSchema),
+        buildValidator,
         authDB,
         authTokenHandler,
     }),
 
     logoutUser: buildLogoutUser({
-        validatePayload: buildValidator(logoutUserSchema),
+        buildValidator,
         authDB,
     }),
 });

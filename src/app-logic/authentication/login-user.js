@@ -1,4 +1,4 @@
-module.exports.loginUserSchema = {
+const loginUserSchema = {
     name: "login_user",
     schema: {
         username: {
@@ -12,14 +12,15 @@ module.exports.loginUserSchema = {
     },
 };
 
-module.exports.buildLoginUser = ({
-    validatePayload,
+const buildLoginUser = ({
+    buildValidator,
     userDB,
     authDB,
     authTokenHandler,
     passwordHash,
 }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(loginUserSchema);
         const { username, password } = validatePayload(payload);
 
         const hashedPassword = await userDB.getPasswordByUsername(username);
@@ -44,3 +45,5 @@ module.exports.buildLoginUser = ({
         };
     };
 };
+
+module.exports = buildLoginUser;

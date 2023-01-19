@@ -1,4 +1,4 @@
-module.exports.logoutUserSchema = {
+const logoutUserSchema = {
     name: "delete_authentication",
     schema: {
         refreshToken: {
@@ -8,10 +8,13 @@ module.exports.logoutUserSchema = {
     },
 };
 
-module.exports.buildLogoutUser = ({ validatePayload, authDB }) => {
+const buildLogoutUser = ({ buildValidator, authDB }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(logoutUserSchema);
         const { refreshToken } = validatePayload(payload);
         await authDB.checkIsTokenExist(refreshToken);
         await authDB.deleteToken(refreshToken);
     };
 };
+
+module.exports = buildLogoutUser;

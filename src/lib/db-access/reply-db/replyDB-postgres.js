@@ -56,7 +56,7 @@ const buildReplyDBPostgres = ({ generateId }) => ({
         await pool.query(softDeleteReplyQuery);
     },
 
-    getRepliesByCommentId: async (commentId) => {
+    getRepliesByCommentIds: async (commentIds) => {
         const getRepliesQuery = {
             text: `
                 SELECT 
@@ -64,14 +64,15 @@ const buildReplyDBPostgres = ({ generateId }) => ({
                     replies.content,
                     replies.date,
                     replies.is_deleted,
+                    replies.comment_id,
                     users.username
                 FROM replies
                 JOIN users
                 ON replies.owner = users.id
-                WHERE replies.comment_id = $1
+                WHERE replies.comment_id = ANY($1::text[])
                 ORDER BY replies.date
             `,
-            values: [commentId],
+            values: [commentIds],
         };
 
         return (await pool.query(getRepliesQuery)).rows;

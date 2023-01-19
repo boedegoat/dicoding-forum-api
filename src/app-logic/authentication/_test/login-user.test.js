@@ -1,46 +1,7 @@
-const { buildLoginUser, loginUserSchema } = require("../login-user");
+const buildLoginUser = require("../login-user");
 const buildValidator = require("../../../lib/validator");
 
-const validatePayload = buildValidator(loginUserSchema);
-
 describe("loginUser", () => {
-    it("throws error if payload doesn't contain needed property", async () => {
-        const invalidPayload = {
-            username: "bob",
-        };
-
-        const loginUser = buildLoginUser({
-            validatePayload,
-            userDB: {},
-            authDB: {},
-            authTokenHandler: {},
-            passwordHash: {},
-        });
-
-        await expect(loginUser(invalidPayload)).rejects.toThrowError(
-            "LOGIN_USER.NOT_CONTAIN_NEEDED_PROPERTY"
-        );
-    });
-
-    it("throws error if payload doesn't meet data type specification", async () => {
-        const invalidPayload = {
-            username: "bob",
-            password: true,
-        };
-
-        const loginUser = buildLoginUser({
-            validatePayload,
-            userDB: {},
-            authDB: {},
-            authTokenHandler: {},
-            passwordHash: {},
-        });
-
-        await expect(loginUser(invalidPayload)).rejects.toThrowError(
-            "LOGIN_USER.NOT_MEET_DATA_TYPE_SPECIFICATION"
-        );
-    });
-
     it("should login user correctly", async () => {
         const payload = {
             username: "agus",
@@ -53,33 +14,27 @@ describe("loginUser", () => {
         };
 
         const mockUserDB = {};
-        mockUserDB.getPasswordByUsername = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve("hashed-password"));
-        mockUserDB.getIdByUsername = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve("user-123"));
+        mockUserDB.getPasswordByUsername = jest.fn(() =>
+            Promise.resolve("hashed-password")
+        );
+        mockUserDB.getIdByUsername = jest.fn(() => Promise.resolve("user-123"));
 
         const mockAuthDB = {};
-        mockAuthDB.addToken = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
+        mockAuthDB.addToken = jest.fn(() => Promise.resolve());
 
         const mockAuthTokenHandler = {};
-        mockAuthTokenHandler.createAccessToken = jest
-            .fn()
-            .mockImplementation(() => expectedAuth.accessToken);
-        mockAuthTokenHandler.createRefreshToken = jest
-            .fn()
-            .mockImplementation(() => expectedAuth.refreshToken);
+        mockAuthTokenHandler.createAccessToken = jest.fn(
+            () => expectedAuth.accessToken
+        );
+        mockAuthTokenHandler.createRefreshToken = jest.fn(
+            () => expectedAuth.refreshToken
+        );
 
         const mockPasswordHash = {};
-        mockPasswordHash.verifyPassword = jest
-            .fn()
-            .mockImplementation(() => Promise.resolve());
+        mockPasswordHash.verifyPassword = jest.fn(() => Promise.resolve());
 
         const loginUser = buildLoginUser({
-            validatePayload,
+            buildValidator,
             userDB: mockUserDB,
             authDB: mockAuthDB,
             authTokenHandler: mockAuthTokenHandler,

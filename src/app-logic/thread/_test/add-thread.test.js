@@ -1,7 +1,5 @@
-const { buildAddThread, addThreadSchema } = require("../add-thread");
+const buildAddThread = require("../add-thread");
 const buildValidator = require("../../../lib/validator");
-
-const validatePayload = buildValidator(addThreadSchema);
 
 describe("addThread", () => {
     it("adds a new thread that sets user as the owner", async () => {
@@ -27,7 +25,7 @@ describe("addThread", () => {
         );
 
         const addThread = buildAddThread({
-            validatePayload,
+            buildValidator,
             threadDB: mockThreadDB,
         });
 

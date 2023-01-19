@@ -1,4 +1,4 @@
-module.exports.addThreadSchema = {
+const addThreadSchema = {
     name: "add_thread",
     schema: {
         title: {
@@ -16,9 +16,12 @@ module.exports.addThreadSchema = {
     },
 };
 
-module.exports.buildAddThread = ({ validatePayload, threadDB }) => {
+const buildAddThread = ({ buildValidator, threadDB }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(addThreadSchema);
         validatePayload(payload);
         return threadDB.addThread(payload);
     };
 };
+
+module.exports = buildAddThread;

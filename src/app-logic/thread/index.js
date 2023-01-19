@@ -1,13 +1,13 @@
-const { buildAddThread, addThreadSchema } = require("./add-thread");
+const buildAddThread = require("./add-thread");
 const buildAddComment = require("./add-comment");
-const { buildDeleteComment, deleteCommentSchema } = require("./delete-comment");
-const { buildGetThread, getThreadSchema } = require("./get-thread");
-const { buildAddReply, addReplySchema } = require("./add-reply");
-const { buildDeleteReply, deleteReplySchema } = require("./delete-reply");
+const buildDeleteComment = require("./delete-comment");
+const buildGetThread = require("./get-thread");
+const buildAddReply = require("./add-reply");
+const buildDeleteReply = require("./delete-reply");
 
 module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
     addThread: buildAddThread({
-        validatePayload: buildValidator(addThreadSchema),
+        buildValidator,
         threadDB,
     }),
 
@@ -18,27 +18,27 @@ module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
     }),
 
     deleteComment: buildDeleteComment({
-        validatePayload: buildValidator(deleteCommentSchema),
+        buildValidator,
         threadDB,
         commentDB,
     }),
 
     getThread: buildGetThread({
-        validatePayload: buildValidator(getThreadSchema),
+        buildValidator,
         threadDB,
         commentDB,
         replyDB,
     }),
 
     addReply: buildAddReply({
-        validatePayload: buildValidator(addReplySchema),
+        buildValidator,
         threadDB,
         commentDB,
         replyDB,
     }),
 
     deleteReply: buildDeleteReply({
-        validatePayload: buildValidator(deleteReplySchema),
+        buildValidator,
         threadDB,
         commentDB,
         replyDB,

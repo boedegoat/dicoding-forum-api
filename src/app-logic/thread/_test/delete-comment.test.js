@@ -1,10 +1,5 @@
-const {
-    buildDeleteComment,
-    deleteCommentSchema,
-} = require("../delete-comment");
+const buildDeleteComment = require("../delete-comment");
 const buildValidator = require("../../../lib/validator");
-
-const validatePayload = buildValidator(deleteCommentSchema);
 
 describe("deleteComment", () => {
     it("deletes comment correctly", async () => {
@@ -27,7 +22,7 @@ describe("deleteComment", () => {
         mockCommentDB.deleteCommentById = jest.fn(() => Promise.resolve());
 
         const deleteComment = buildDeleteComment({
-            validatePayload,
+            buildValidator,
             commentDB: mockCommentDB,
             threadDB: mockThreadDB,
         });

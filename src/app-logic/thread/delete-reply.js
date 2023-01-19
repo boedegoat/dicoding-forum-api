@@ -1,4 +1,4 @@
-module.exports.deleteReplySchema = {
+const deleteReplySchema = {
     name: "delete_reply",
     schema: {
         threadId: {
@@ -20,13 +20,9 @@ module.exports.deleteReplySchema = {
     },
 };
 
-module.exports.buildDeleteReply = ({
-    validatePayload,
-    threadDB,
-    commentDB,
-    replyDB,
-}) => {
+const buildDeleteReply = ({ buildValidator, threadDB, commentDB, replyDB }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(deleteReplySchema);
         const { threadId, commentId, replyId, userId } =
             validatePayload(payload);
         await threadDB.checkIsThreadExistById(threadId);
@@ -39,3 +35,5 @@ module.exports.buildDeleteReply = ({
         await replyDB.deleteReplyById(replyId);
     };
 };
+
+module.exports = buildDeleteReply;

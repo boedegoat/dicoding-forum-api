@@ -1,4 +1,4 @@
-module.exports.registerUserSchema = {
+const registerUserSchema = {
     name: "register_user",
     schema: {
         username: {
@@ -18,15 +18,14 @@ module.exports.registerUserSchema = {
     },
 };
 
-module.exports.buildRegisterUser = ({
-    validatePayload,
-    userDB,
-    passwordHash,
-}) => {
+const buildRegisterUser = ({ buildValidator, userDB, passwordHash }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(registerUserSchema);
         const newUser = validatePayload(payload);
         await userDB.verifyUsername(newUser.username);
         newUser.password = await passwordHash.hash(newUser.password);
         return userDB.addUser(newUser);
     };
 };
+
+module.exports = buildRegisterUser;

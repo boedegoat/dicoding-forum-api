@@ -1,7 +1,5 @@
-const { buildDeleteReply, deleteReplySchema } = require("../delete-reply");
+const buildDeleteReply = require("../delete-reply");
 const buildValidator = require("../../../lib/validator");
-
-const validatePayload = buildValidator(deleteReplySchema);
 
 describe("deleteReply", () => {
     it("deletes reply correctly", async () => {
@@ -25,7 +23,7 @@ describe("deleteReply", () => {
         mockReplyDB.deleteReplyById = jest.fn(() => Promise.resolve());
 
         const deleteComment = buildDeleteReply({
-            validatePayload,
+            buildValidator,
             commentDB: mockCommentDB,
             threadDB: mockThreadDB,
             replyDB: mockReplyDB,

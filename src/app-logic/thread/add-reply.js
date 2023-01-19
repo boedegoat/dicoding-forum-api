@@ -1,6 +1,6 @@
 // TODO: refactor code like add-comment.js
 
-module.exports.addReplySchema = {
+const addReplySchema = {
     name: "add_reply",
     schema: {
         threadId: {
@@ -22,16 +22,14 @@ module.exports.addReplySchema = {
     },
 };
 
-module.exports.buildAddReply = ({
-    validatePayload,
-    threadDB,
-    commentDB,
-    replyDB,
-}) => {
+const buildAddReply = ({ buildValidator, threadDB, commentDB, replyDB }) => {
     return async (payload) => {
+        const validatePayload = buildValidator(addReplySchema);
         validatePayload(payload);
         await threadDB.checkIsThreadExistById(payload.threadId);
         await commentDB.checkIsCommentExistById(payload.commentId);
         return replyDB.addReply(payload);
     };
 };
+
+module.exports = buildAddReply;
