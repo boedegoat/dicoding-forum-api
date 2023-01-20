@@ -11,6 +11,7 @@ const {
     threadDB,
     commentDB,
     replyDB,
+    commentLikeDB,
 } = require("../../lib/db-access");
 const { authTokenHandler, passwordHash } = require("../../lib/security");
 
@@ -102,6 +103,7 @@ const buildHapiServer = async ({
                     buildValidator,
                     threadDB,
                     commentDB,
+                    commentLikeDB,
                     replyDB,
                 }),
             },
@@ -130,7 +132,7 @@ const buildHapiServer = async ({
             }
 
             // handles server error
-            console.log(res);
+            console.log(res.stack);
             const errRes = h.response({
                 status: "error",
                 message: "terjadi kegagalan pada server kami",

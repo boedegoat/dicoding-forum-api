@@ -39,6 +39,8 @@
     npm run test
     # or
     npm run test:coverage
+    # or runs on specific test file
+    npm run test:coverage -- <filename>.test.js
     ```
 -   Dev server
     ```

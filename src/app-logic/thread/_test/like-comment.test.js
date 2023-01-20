@@ -4,83 +4,97 @@ const buildValidator = require("../../../lib/validator");
 describe("likeComment", () => {
     it("adds like to comment if user hasn't liked the comment", async () => {
         const payload = {
+            threadId: "thread-1",
             commentId: "comment-1",
             userId: "user-1",
         };
 
         const mockCommentDB = {};
-        const mockCommentLikesDB = {};
+        const mockCommentLikeDB = {};
+        const mockThreadDB = {};
 
+        mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
         mockCommentDB.checkIsCommentExistById = jest.fn(() =>
             Promise.resolve()
         );
-        mockCommentLikesDB.checkIsUserAlreadyLikedComment = jest.fn(() =>
+        mockCommentLikeDB.checkIsUserAlreadyLikedComment = jest.fn(() =>
             Promise.resolve(false)
         );
-        mockCommentLikesDB.likeComment = jest.fn(() => Promise.resolve());
-        mockCommentLikesDB.unlikeComment = jest.fn(() => Promise.resolve());
+        mockCommentLikeDB.likeComment = jest.fn(() => Promise.resolve());
+        mockCommentLikeDB.unlikeComment = jest.fn(() => Promise.resolve());
 
         const likeComment = buildLikeComment({
             buildValidator,
+            threadDB: mockThreadDB,
             commentDB: mockCommentDB,
-            commentLikesDB: mockCommentLikesDB,
+            commentLikeDB: mockCommentLikeDB,
         });
 
         await expect(likeComment(payload)).resolves.not.toThrowError();
+        expect(mockThreadDB.checkIsThreadExistById).toBeCalledWith(
+            payload.threadId
+        );
         expect(mockCommentDB.checkIsCommentExistById).toBeCalledWith(
             payload.commentId
         );
-        expect(
-            mockCommentLikesDB.checkIsUserAlreadyLikedComment
-        ).toBeCalledWith({
+        expect(mockCommentLikeDB.checkIsUserAlreadyLikedComment).toBeCalledWith(
+            {
+                userId: payload.userId,
+                commentId: payload.commentId,
+            }
+        );
+        expect(mockCommentLikeDB.likeComment).toBeCalledWith({
             userId: payload.userId,
             commentId: payload.commentId,
         });
-        expect(mockCommentLikesDB.likeComment).toBeCalledWith({
-            userId: payload.userId,
-            commentId: payload.commentId,
-        });
-        expect(mockCommentLikesDB.unlikeComment).not.toBeCalled();
+        expect(mockCommentLikeDB.unlikeComment).not.toBeCalled();
     });
 
     it("removes like from comment if user already liked the comment", async () => {
         const payload = {
+            threadId: "thread-1",
             commentId: "comment-1",
             userId: "user-1",
         };
 
         const mockCommentDB = {};
-        const mockCommentLikesDB = {};
+        const mockCommentLikeDB = {};
+        const mockThreadDB = {};
 
+        mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
         mockCommentDB.checkIsCommentExistById = jest.fn(() =>
             Promise.resolve()
         );
-        mockCommentLikesDB.checkIsUserAlreadyLikedComment = jest.fn(() =>
+        mockCommentLikeDB.checkIsUserAlreadyLikedComment = jest.fn(() =>
             Promise.resolve(true)
         );
-        mockCommentLikesDB.unlikeComment = jest.fn(() => Promise.resolve());
-        mockCommentLikesDB.likeComment = jest.fn(() => Promise.resolve());
+        mockCommentLikeDB.unlikeComment = jest.fn(() => Promise.resolve());
+        mockCommentLikeDB.likeComment = jest.fn(() => Promise.resolve());
 
         const likeComment = buildLikeComment({
             buildValidator,
+            threadDB: mockThreadDB,
             commentDB: mockCommentDB,
-            commentLikesDB: mockCommentLikesDB,
+            commentLikeDB: mockCommentLikeDB,
         });
 
         await expect(likeComment(payload)).resolves.not.toThrowError();
+        expect(mockThreadDB.checkIsThreadExistById).toBeCalledWith(
+            payload.threadId
+        );
         expect(mockCommentDB.checkIsCommentExistById).toBeCalledWith(
             payload.commentId
         );
-        expect(
-            mockCommentLikesDB.checkIsUserAlreadyLikedComment
-        ).toBeCalledWith({
+        expect(mockCommentLikeDB.checkIsUserAlreadyLikedComment).toBeCalledWith(
+            {
+                userId: payload.userId,
+                commentId: payload.commentId,
+            }
+        );
+        expect(mockCommentLikeDB.unlikeComment).toBeCalledWith({
             userId: payload.userId,
             commentId: payload.commentId,
         });
-        expect(mockCommentLikesDB.unlikeComment).toBeCalledWith({
-            userId: payload.userId,
-            commentId: payload.commentId,
-        });
-        expect(mockCommentLikesDB.likeComment).not.toBeCalled();
+        expect(mockCommentLikeDB.likeComment).not.toBeCalled();
     });
 });

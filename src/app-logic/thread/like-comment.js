@@ -1,6 +1,10 @@
 const likeCommentSchema = {
     name: "like_comment",
     schema: {
+        threadId: {
+            type: "string",
+            required: true,
+        },
         commentId: {
             type: "string",
             required: true,
@@ -12,25 +16,32 @@ const likeCommentSchema = {
     },
 };
 
-const buildLikeComment = ({ buildValidator, commentDB, commentLikesDB }) => {
+const buildLikeComment = ({
+    buildValidator,
+    threadDB,
+    commentDB,
+    commentLikeDB,
+}) => {
     return async (payload) => {
         const validatePayload = buildValidator(likeCommentSchema);
-        const { commentId, userId } = validatePayload(payload);
+        const { threadId, commentId, userId } = validatePayload(payload);
 
+        await threadDB.checkIsThreadExistById(threadId);
         await commentDB.checkIsCommentExistById(commentId);
+
         const isUserAlreadyLiked =
-            await commentLikesDB.checkIsUserAlreadyLikedComment({
+            await commentLikeDB.checkIsUserAlreadyLikedComment({
                 userId,
                 commentId,
             });
 
         if (!isUserAlreadyLiked) {
-            await commentLikesDB.likeComment({
+            await commentLikeDB.likeComment({
                 userId,
                 commentId,
             });
         } else {
-            await commentLikesDB.unlikeComment({
+            await commentLikeDB.unlikeComment({
                 userId,
                 commentId,
             });
