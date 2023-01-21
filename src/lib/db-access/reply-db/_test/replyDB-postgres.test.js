@@ -227,16 +227,16 @@ describe("replyDB-postgres", () => {
                     username: "ucup",
                     date: expect.any(Date),
                     content: "reply",
-                    is_deleted: false,
-                    comment_id: "comment-1",
+                    isDeleted: false,
+                    commentId: "comment-1",
                 },
                 {
                     id: "reply-2",
                     username: "ucup",
                     date: expect.any(Date),
                     content: "reply",
-                    is_deleted: true,
-                    comment_id: "comment-1",
+                    isDeleted: true,
+                    commentId: "comment-1",
                 },
             ];
 

@@ -1,6 +1,7 @@
 const pool = require("../../db/postgres");
 const AuthorizationError = require("../../errors/AuthorizationError");
 const NotFoundError = require("../../errors/NotFoundError");
+const serializeRow = require("../serializer");
 
 const buildReplyDBPostgres = ({ generateId }) => ({
     addReply: async ({ commentId, content, userId }) => {
@@ -75,7 +76,7 @@ const buildReplyDBPostgres = ({ generateId }) => ({
             values: [commentIds],
         };
 
-        return (await pool.query(getRepliesQuery)).rows;
+        return (await pool.query(getRepliesQuery)).rows.map(serializeRow);
     },
 });
 

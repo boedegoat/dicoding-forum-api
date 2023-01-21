@@ -217,14 +217,14 @@ describe("commentDB-postgres", () => {
                     date: expect.any(Date),
                     username: "udin",
                     content: "comment",
-                    is_deleted: false,
+                    isDeleted: false,
                 },
                 {
                     id: "comment-2",
                     date: expect.any(Date),
                     username: "umang",
                     content: "comment",
-                    is_deleted: true,
+                    isDeleted: true,
                 },
             ];
 

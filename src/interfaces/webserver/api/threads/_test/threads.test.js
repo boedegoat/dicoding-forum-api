@@ -2,6 +2,7 @@ const userDBTest = require("../../../../../../tests/userDBTest");
 const threadDBTest = require("../../../../../../tests/threadDBTest");
 const commentDBTest = require("../../../../../../tests/commentDBTest");
 const replyDBTest = require("../../../../../../tests/replyDBTest");
+const commentLikeDBTest = require("../../../../../../tests/commentLikeDBTest");
 const pool = require("../../../../../lib/db/postgres");
 const buildHapiServer = require("../../../hapi-server");
 const { getAccessToken } = require("../../_utils");
@@ -10,11 +11,17 @@ describe("/threads route", () => {
     beforeEach(async () => {
         await userDBTest.cleanTable();
         await threadDBTest.cleanTable();
+        await commentDBTest.cleanTable();
+        await replyDBTest.cleanTable();
+        await commentLikeDBTest.cleanTable();
     });
 
     afterAll(async () => {
         await userDBTest.cleanTable();
         await threadDBTest.cleanTable();
+        await commentDBTest.cleanTable();
+        await replyDBTest.cleanTable();
+        await commentLikeDBTest.cleanTable();
         await pool.end();
     });
 
@@ -713,6 +720,117 @@ describe("/threads route", () => {
             const res = await hapiServer.server.inject({
                 method: "DELETE",
                 url: `/threads/thread-1/comments/comment-1/replies/${replyId}`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            const data = JSON.parse(res.payload);
+            expect(res.statusCode).toEqual(200);
+            expect(data.status).toEqual("success");
+        });
+    });
+
+    describe("PUT /threads/{threadId}/comments/{commentId}/likes", () => {
+        it("responses 401 if user is not logged in", async () => {
+            const hapiServer = await buildHapiServer();
+            const res = await hapiServer.server.inject({
+                method: "PUT",
+                url: "/threads/thread-1/comments/comment-1/likes",
+                payload: {},
+            });
+
+            expect(res.statusCode).toEqual(401);
+        });
+
+        it("responses 404 if thread is not found", async () => {
+            const [hapiServer, accessToken] = await Promise.all([
+                buildHapiServer(),
+                getAccessToken(),
+            ]);
+
+            const payload = {
+                threadId: "thread-1",
+                commentId: "comment-1",
+            };
+
+            const res = await hapiServer.server.inject({
+                method: "PUT",
+                url: "/threads/thread-1/comments/comment-1/likes",
+                payload,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            const data = JSON.parse(res.payload);
+            expect(res.statusCode).toEqual(404);
+            expect(data.status).toEqual("fail");
+            expect(typeof data.message).toEqual("string");
+            expect(data.message).not.toEqual("");
+        });
+
+        it("responses 404 if comment is not found", async () => {
+            await userDBTest.addUser({ id: "user-1" });
+            await threadDBTest.addThread({
+                id: "thread-1",
+                userId: "user-1",
+            });
+
+            const [hapiServer, accessToken] = await Promise.all([
+                buildHapiServer(),
+                getAccessToken(),
+            ]);
+
+            const payload = {
+                threadId: "thread-1",
+                commentId: "comment-1",
+            };
+
+            const res = await hapiServer.server.inject({
+                method: "PUT",
+                url: "/threads/thread-1/comments/comment-1/likes",
+                payload,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            const data = JSON.parse(res.payload);
+            expect(res.statusCode).toEqual(404);
+            expect(data.status).toEqual("fail");
+            expect(typeof data.message).toEqual("string");
+            expect(data.message).not.toEqual("");
+        });
+
+        it("responses 200 if comment exist and likes comment correctly", async () => {
+            await userDBTest.addUser({
+                id: "user-1",
+            });
+            await threadDBTest.addThread({
+                id: "thread-1",
+                userId: "user-1",
+            });
+            await commentDBTest.addComment({
+                id: "comment-1",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
+
+            const [hapiServer, accessToken] = await Promise.all([
+                buildHapiServer(),
+                getAccessToken(),
+            ]);
+
+            const payload = {
+                threadId: "thread-1",
+                commentId: "comment-1",
+            };
+
+            const res = await hapiServer.server.inject({
+                method: "PUT",
+                url: "/threads/thread-1/comments/comment-1/likes",
+                payload,
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },

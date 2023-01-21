@@ -10,6 +10,7 @@ describe("getThread", () => {
         const mockThreadDB = {};
         const mockCommentDB = {};
         const mockReplyDB = {};
+        const mockCommentLikeDB = {};
 
         mockThreadDB.checkIsThreadExistById = jest.fn(() => Promise.resolve());
 
@@ -30,12 +31,28 @@ describe("getThread", () => {
                     username: "johndoe",
                     date: "2021-08-08T07:22:33.555Z",
                     content: "comment",
-                    is_deleted: false,
+                    isDeleted: false,
+                },
+                {
+                    id: "comment-2",
+                    username: "udin",
+                    date: "2021-08-08T07:22:33.555Z",
+                    content: "comment",
+                    isDeleted: false,
                 },
             ])
         );
 
-        mockReplyDB.getRepliesByCommentIds = jest.fn(() => []);
+        mockCommentLikeDB.getLikesByCommentIds = jest.fn(() =>
+            Promise.resolve([
+                {
+                    commentId: "comment-1",
+                    likeCount: 3,
+                },
+            ])
+        );
+
+        mockReplyDB.getRepliesByCommentIds = jest.fn(() => Promise.resolve([]));
 
         const expectedReturnedThread = {
             id: "thread-1",
@@ -49,6 +66,14 @@ describe("getThread", () => {
                     username: "johndoe",
                     date: "2021-08-08T07:22:33.555Z",
                     content: "comment",
+                    likeCount: 3,
+                },
+                {
+                    id: "comment-2",
+                    username: "udin",
+                    date: "2021-08-08T07:22:33.555Z",
+                    content: "comment",
+                    likeCount: 0,
                 },
             ],
         };
@@ -58,6 +83,7 @@ describe("getThread", () => {
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
             replyDB: mockReplyDB,
+            commentLikeDB: mockCommentLikeDB,
         });
 
         const actualReturnedThread = await getThread(payload);
@@ -70,8 +96,13 @@ describe("getThread", () => {
         expect(mockCommentDB.getCommentsByThreadId).toBeCalledWith(
             payload.threadId
         );
+        expect(mockCommentLikeDB.getLikesByCommentIds).toBeCalledWith([
+            "comment-1",
+            "comment-2",
+        ]);
         expect(mockReplyDB.getRepliesByCommentIds).toBeCalledWith([
             "comment-1",
+            "comment-2",
         ]);
     });
 
@@ -83,6 +114,7 @@ describe("getThread", () => {
         const mockThreadDB = {};
         const mockCommentDB = {};
         const mockReplyDB = {};
+        const mockCommentLikeDB = {};
 
         mockThreadDB.checkIsThreadExistById = jest
             .fn()
@@ -105,29 +137,40 @@ describe("getThread", () => {
                     username: "johndoe",
                     date: "2021-08-08T07:22:33.555Z",
                     content: "sebuah comment",
-                    is_deleted: true,
+                    isDeleted: true,
                 },
             ])
         );
 
-        mockReplyDB.getRepliesByCommentIds = jest.fn(() => [
-            {
-                id: "reply-1",
-                content: "sebuah balasan",
-                date: "2021-08-08T07:59:48.766Z",
-                username: "johndoe",
-                is_deleted: false,
-                comment_id: "comment-1",
-            },
-            {
-                id: "reply-2",
-                content: "sebuah balasan",
-                date: "2021-08-08T08:07:01.522Z",
-                username: "dicoding",
-                is_deleted: true,
-                comment_id: "comment-1",
-            },
-        ]);
+        mockCommentLikeDB.getLikesByCommentIds = jest.fn(() =>
+            Promise.resolve([
+                {
+                    commentId: "comment-1",
+                    likeCount: 3,
+                },
+            ])
+        );
+
+        mockReplyDB.getRepliesByCommentIds = jest.fn(() =>
+            Promise.resolve([
+                {
+                    id: "reply-1",
+                    content: "sebuah balasan",
+                    date: "2021-08-08T07:59:48.766Z",
+                    username: "johndoe",
+                    isDeleted: false,
+                    commentId: "comment-1",
+                },
+                {
+                    id: "reply-2",
+                    content: "sebuah balasan",
+                    date: "2021-08-08T08:07:01.522Z",
+                    username: "dicoding",
+                    isDeleted: true,
+                    commentId: "comment-1",
+                },
+            ])
+        );
 
         const expectedReturnedThread = {
             id: "thread-1",
@@ -141,6 +184,7 @@ describe("getThread", () => {
                     username: "johndoe",
                     date: "2021-08-08T07:22:33.555Z",
                     content: "**komentar telah dihapus**",
+                    likeCount: 3,
                     replies: [
                         {
                             id: "reply-1",
@@ -164,6 +208,7 @@ describe("getThread", () => {
             threadDB: mockThreadDB,
             commentDB: mockCommentDB,
             replyDB: mockReplyDB,
+            commentLikeDB: mockCommentLikeDB,
         });
 
         const actualReturnedThread = await getThread(payload);
@@ -176,6 +221,9 @@ describe("getThread", () => {
         expect(mockCommentDB.getCommentsByThreadId).toBeCalledWith(
             payload.threadId
         );
+        expect(mockCommentLikeDB.getLikesByCommentIds).toBeCalledWith([
+            "comment-1",
+        ]);
         expect(mockReplyDB.getRepliesByCommentIds).toBeCalledWith([
             "comment-1",
         ]);

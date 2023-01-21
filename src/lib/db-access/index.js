@@ -5,6 +5,7 @@ const buildCommentDBPostgres = require("./comment-db/commentDB-postgres");
 const buildThreadDBPostgres = require("./thread-db/threadDB-postgres");
 const buildUserDBPostgres = require("./user-db/userDB-postgres");
 const buildReplyDBPostgres = require("./reply-db/replyDB-postgres");
+const buildCommentLikeDBPostgres = require("./comment-like-db/commentLikeDB-postgres");
 
 module.exports = {
     userDB: buildUserDBPostgres({
@@ -15,6 +16,9 @@ module.exports = {
         generateId: nanoid,
     }),
     commentDB: buildCommentDBPostgres({
+        generateId: nanoid,
+    }),
+    commentLikeDB: buildCommentLikeDBPostgres({
         generateId: nanoid,
     }),
     replyDB: buildReplyDBPostgres({

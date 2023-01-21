@@ -4,8 +4,15 @@ const buildDeleteComment = require("./delete-comment");
 const buildGetThread = require("./get-thread");
 const buildAddReply = require("./add-reply");
 const buildDeleteReply = require("./delete-reply");
+const buildLikeComment = require("./like-comment");
 
-module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
+module.exports = ({
+    buildValidator,
+    threadDB,
+    commentDB,
+    commentLikeDB,
+    replyDB,
+}) => ({
     addThread: buildAddThread({
         buildValidator,
         threadDB,
@@ -27,6 +34,7 @@ module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
         buildValidator,
         threadDB,
         commentDB,
+        commentLikeDB,
         replyDB,
     }),
 
@@ -42,5 +50,12 @@ module.exports = ({ buildValidator, threadDB, commentDB, replyDB }) => ({
         threadDB,
         commentDB,
         replyDB,
+    }),
+
+    likeComment: buildLikeComment({
+        buildValidator,
+        threadDB,
+        commentDB,
+        commentLikeDB,
     }),
 });

@@ -95,6 +95,22 @@ const buildThreadHandler = ({ threadLogic }) => ({
         });
         return res;
     },
+
+    putCommentLikeHandler: async (request, h) => {
+        const { id: userId } = request.auth.credentials;
+        const { threadId, commentId } = request.params;
+
+        await threadLogic.likeComment({
+            userId,
+            threadId,
+            commentId,
+        });
+
+        const res = h.response({
+            status: "success",
+        });
+        return res;
+    },
 });
 
 module.exports = buildThreadHandler;
