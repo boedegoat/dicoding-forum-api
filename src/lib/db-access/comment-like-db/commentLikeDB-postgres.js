@@ -1,4 +1,5 @@
 const pool = require("../../db/postgres");
+const serializeRow = require("../serializer");
 
 const buildCommentLikeDBPostgres = ({ generateId }) => ({
     checkIsUserAlreadyLikedComment: async ({ commentId, userId }) => {
@@ -28,6 +29,25 @@ const buildCommentLikeDBPostgres = ({ generateId }) => ({
         };
 
         await pool.query(query);
+    },
+
+    getLikesByCommentIds: async (commentIds) => {
+        const query = {
+            text: `
+                SELECT comment_id, COUNT(*) as like_count FROM comment_likes
+                WHERE comment_id = ANY($1::text[])
+                GROUP BY comment_id
+            `,
+            values: [commentIds],
+        };
+
+        return (await pool.query(query)).rows.map((row) => {
+            const serializedRow = serializeRow(row);
+            return {
+                ...serializedRow,
+                likeCount: Number(serializedRow.likeCount),
+            };
+        });
     },
 });
 

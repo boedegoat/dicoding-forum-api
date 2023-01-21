@@ -34,6 +34,7 @@ module.exports = ({
         buildValidator,
         threadDB,
         commentDB,
+        commentLikeDB,
         replyDB,
     }),
 

@@ -140,4 +140,47 @@ describe("commentLikesDB-postgres", () => {
             expect(likes.length).toEqual(0);
         });
     });
+
+    describe("getLikesByCommentIds", () => {
+        it("returns array of comment id and like count correctly", async () => {
+            await userDBTest.addUser({ id: "user-1", username: "yanto" });
+            await userDBTest.addUser({ id: "user-2", username: "jono" });
+            await threadDBTest.addThread({
+                id: "thread-1",
+                userId: "user-1",
+            });
+            await commentDBTest.addComment({
+                id: "comment-1",
+                threadId: "thread-1",
+                userId: "user-1",
+            });
+            await commentLikeDBTest.addLike({
+                id: "comment-like-1",
+                commentId: "comment-1",
+                userId: "user-1",
+            });
+            await commentLikeDBTest.addLike({
+                id: "comment-like-2",
+                commentId: "comment-1",
+                userId: "user-2",
+            });
+
+            const expectedLikes = [
+                {
+                    commentId: "comment-1",
+                    likeCount: 2,
+                },
+            ];
+
+            const commentLikeDB = buildCommentLikeDBPostgres({
+                generateId: {},
+            });
+
+            const actualLikes = await commentLikeDB.getLikesByCommentIds([
+                "comment-1",
+            ]);
+
+            expect(actualLikes).toEqual(expectedLikes);
+        });
+    });
 });
