@@ -9,7 +9,7 @@
     HOST=
     PORT=
 
-    # POSTGRES
+    # POSTGRES (production database)
     PGHOST=
     PGUSER=
     PGDATABASE=
@@ -22,26 +22,52 @@
     ACCCESS_TOKEN_AGE=
     ```
 
-    > **Catatan**
-    >
-    > Gunakan database testing di local dan CI environment, database asli di production environment (e.g EC2 Instance)
+2. Setup `config/database/test.json`
 
-2. Install dependencies and migrate database
+    This test database config is used for testing with jest
+
+    ```json
+    {
+        "user": "",
+        "password": "",
+        "host": "",
+        "port": 5432,
+        "database": ""
+    }
+    ```
+
+3. Install dependencies
+
     ```
     npm i
+    ```
+
+4. Migrate database
+
+    ```
+    npm run migrate:dev up
+
+    # or runs on production database
+
     npm run migrate up
     ```
 
 ## Run
 
 -   Test
+
     ```
     npm run test
+
     # or
-    npm run test:coverage
+
+    npm run test:dev:coverage
+
     # or runs on specific test file
-    npm run test:coverage -- <filename>.test.js
+
+    npm run test:dev:coverage -- <filename>.test.js
     ```
+
 -   Dev server
     ```
     npm run dev
