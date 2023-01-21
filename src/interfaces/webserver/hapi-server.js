@@ -53,7 +53,9 @@ const buildHapiServer = async ({
             method: "GET",
             path: "/",
             handler: () => ({
-                message: "samlekom",
+                name: "forum-api",
+                message: "Welcome to Forum API",
+                repository: "https://github.com/boedegoat/dicoding-forum-api",
             }),
         },
         {

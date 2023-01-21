@@ -25,7 +25,7 @@ describe("HTTP Server", () => {
         expect(resJson.message).toEqual("terjadi kegagalan pada server kami");
     });
 
-    it("responses json with a message 'samlekom' on GET /", async () => {
+    it("responses json with a message 'Welcome to Forum API' on GET /", async () => {
         const hapiServer = await buildHapiServer();
         const res = await hapiServer.server.inject({
             method: "GET",
@@ -33,7 +33,7 @@ describe("HTTP Server", () => {
         });
 
         const resJson = JSON.parse(res.payload);
-        expect(resJson.message).toEqual("samlekom");
+        expect(resJson.message).toEqual("Welcome to Forum API");
     });
 
     it("responses json with a value of request user agent on GET /user-agent", async () => {
